@@ -80,6 +80,10 @@ box. Requires Kokkos; see its README.
 
 `docs/PLAN.md` (v1) and `docs/PLAN-v1.1.md` (complex support) are historical
 design records describing the rationale behind the type and its API.
+`docs/CONDITION_NUMBERS.md` derives every per-op condition number from first
+principles, documents the error-propagation model and where it departs from the
+strict textbook formula (e.g. `mul`/`div` use `cond=1`), and lists the
+numerical-analysis literature (Higham, Trefethen & Bau, Goldberg, Smith, Kahan).
 
 ## Conventions
 

@@ -66,7 +66,9 @@ cd build && ctest --output-on-failure
 - **`examples/complex_log_micro/`** — optional Kokkos-based micro-driver
   demonstrating the **opaque-barrier** pattern for kernels that call framework
   math you can't see into. Not built by the top-level CMake; see its README.
-- **`docs/`** — design records (`PLAN.md`, `PLAN-v1.1.md`).
+- **`docs/`** — design records (`PLAN.md`, `PLAN-v1.1.md`) and
+  `CONDITION_NUMBERS.md` (full derivations of every per-op condition number,
+  the error-propagation model, and the numerical-analysis references).
 
 ## Key ideas
 
