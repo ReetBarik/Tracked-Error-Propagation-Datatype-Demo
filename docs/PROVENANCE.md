@@ -132,11 +132,15 @@ scratch nodes from a graph view, or to roll up all literals into one bucket.
   they simply show up now that they carry ids.
 
 **Where it's used internally.** `Complex<T>`'s bare-scalar promotions route
-through `literal()` — the `Complex(T re, T im)` component constructors and the
-mixed-scalar operators (`z * 3.0`, etc.). This is the root fix for the
-empty-`in` records that anonymous scalar-to-complex promotions produced before
-v0.4. (Structural constants like the imaginary `zero` of a real-promoted complex,
-and `half`/`two` in `sqrt`, are named `constant()`s, not literals.)
+through `literal()` — the `Complex(T re, T im)` component constructors, the
+mixed-scalar operators (`z * 3.0`, etc.), and the imaginary padding of a
+real-promoted complex (`Complex(Tracked<T> re)`, whose `im` is a structural zero,
+not a zero the user's math named). This is the root fix for the empty-`in`
+records that anonymous scalar-to-complex promotions produced before v0.4.
+
+By contrast, `half`/`two` in `sqrt` *are* named `constant()`s — they are
+mathematical coefficients the algorithm invokes by name. The line is intent:
+`prov_consts` records constants the computation referred to, not machinery.
 
 **Guidance.** Prefer `constant()` for anything with a semantic name; reach for
 `literal()` only when the scalar truly doesn't warrant one. The raw

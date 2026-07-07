@@ -38,10 +38,12 @@ public:
     Complex(Tracked<T> re, Tracked<T> im)
         : re_(std::move(re)), im_(std::move(im)) {}
 
-    // The imaginary part of a real-promoted complex is a structural zero — a
-    // named constant, not an anonymous literal.
+    // The imaginary part of a real-promoted complex is a structural padding
+    // artifact, not a zero the user's math named — so it's an anonymous
+    // literal(), not constant("zero"). prov_consts is reserved for constants the
+    // computation actually referred to by name.
     explicit Complex(Tracked<T> re)
-        : re_(std::move(re)), im_(constant("zero", T(0))) {}
+        : re_(std::move(re)), im_(literal(T(0))) {}
 
     const Tracked<T>& real() const { return re_; }
     const Tracked<T>& imag() const { return im_; }

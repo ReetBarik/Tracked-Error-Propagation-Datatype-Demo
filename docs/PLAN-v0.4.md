@@ -69,16 +69,21 @@ and filter or aggregate them.
 
 ### 4. `complex.hpp` migration — the root fix
 
-- **Anonymous runtime scalars → `literal()`**: the `Complex(T re, T im)`
-  component promotions, the eight mixed-scalar operators, and `sqrt`'s
-  runtime-selected `sign(im)` (±1, *not* a named constant — `constant()` dedups
-  by name, so a shared `"sign"` id would conflate `+1` and `-1`).
-- **Source-literal numerics → `constant()`** with textbook names: `sqrt`'s
-  `0.5 → constant("half")` and `2 → constant("two")`, and the imaginary padding
-  of a real-promoted complex `T(0) → constant("zero")`.
+- **Anonymous scalars → `literal()`**: the `Complex(T re, T im)` component
+  promotions, the eight mixed-scalar operators, `sqrt`'s runtime-selected
+  `sign(im)` (±1, *not* a named constant — `constant()` dedups by name, so a
+  shared `"sign"` id would conflate `+1` and `-1`), and the imaginary padding of
+  a real-promoted complex (`Complex(Tracked<T> re)`), which is a structural
+  artifact rather than a zero the user's math named.
+- **Named mathematical constants → `constant()`**: `sqrt`'s
+  `0.5 → constant("half")` and `2 → constant("two")` — coefficients the algorithm
+  invokes by name.
 
-Rule of thumb: a hardcoded numeric literal in source with a textbook name is a
-`constant()`; a runtime scalar variable is a `literal()`.
+Rule of thumb: the split is **intent, not spelling**. A constant the computation
+actually referred to by name (`half`, `two`) is a `constant()`; a scalar that is
+machinery — a scratch value, a runtime-selected sign, or structural padding —
+is a `literal()`, even when it's a hardcoded `T(0)`. `prov_consts` should reflect
+the constants in the user's math, not the library's plumbing.
 
 All three factories (and the raw constructor) are numerically identical — same
 `value`, `rel_err`, `cond` — so no calibration assertion moves; only ids and

@@ -40,12 +40,14 @@ TEST_CASE("Complex: raw-scalar components are anonymous literals (v0.4)") {
     REQUIRE(z.imag().prov_consts_.empty());
 }
 
-TEST_CASE("Complex: real-promoted imaginary part is the 'zero' constant (v0.4)") {
+TEST_CASE("Complex: real-promoted imaginary part is a structural literal (v0.4)") {
+    // The imag padding is machinery, not a user-named zero — so it's an
+    // anonymous literal, and prov_consts stays empty.
     auto re = track("re", 7.0);
     Complex<double> z(re);              // explicit single-Tracked ctor
     REQUIRE(z.imag().value_ == 0.0);
-    REQUIRE(z.imag().id() == "zero");
-    REQUIRE(z.imag().prov_consts_ == std::set<std::string>{"zero"});
+    REQUIRE(z.imag().id().rfind("_lit@", 0) == 0);
+    REQUIRE(z.imag().prov_consts_.empty());
     REQUIRE(z.imag().prov_vars_.empty());
 }
 
