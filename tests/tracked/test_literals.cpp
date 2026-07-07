@@ -3,6 +3,7 @@
 
 #include <tracked/tracked.hpp>
 #include <tracked/ops.hpp>
+#include <tracked/complex.hpp>
 
 #include <algorithm>
 #include <regex>
@@ -128,4 +129,22 @@ TEST_CASE("trace_ancestors_includes_literals") {
     auto order = tracked::journal::trace_ancestors(z.id());
     REQUIRE(std::find(order.begin(), order.end(), a.id()) != order.end());
     REQUIRE(std::find(order.begin(), order.end(), b.id()) != order.end());
+}
+
+// ============================================================
+// 8. regression: complex ops never emit empty `in` ids
+// ============================================================
+
+TEST_CASE("complex_ops_produce_no_empty_in_ids") {
+    clear();
+    using Cplx = tracked::Complex<double>;
+    auto z1 = Cplx(track("re1", 1.0), track("im1", 2.0));
+    auto z2 = z1 * Cplx(3.0);              // scalar-to-complex promotion
+    auto z3 = z2 + tracked::literal(0.5);  // explicit literal path
+    (void)z3;
+    for (const auto& rec : records()) {
+        for (const auto& inp : rec.in) {
+            REQUIRE_FALSE(inp.empty());
+        }
+    }
 }
